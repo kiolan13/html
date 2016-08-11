@@ -31,72 +31,40 @@ class Controller
 
     }
 
-    public function eNaddtopr()
+    public function insert()
     {
 
-        $parameters = $_POST["addids"];
-        $data       = $this->b->selectByIdAt($parameters);
-        $result     = json_encode($data);
-        echo $result;
+        $parameters = $_POST;
+        $this->tableByType($parameters);
 
-    }
-
-    public function eNttInsert()
-    {
-
-        $name       = $_POST["name"];
-        $text       = $_POST["text"];
-        $attributes = $_POST["attributes"];
-
-        $parameters = [];
-
-        array_push($parameters, $name, $text, $attributes);
-
-        $this->b->insertEn($parameters);
-
-    }
-
-    public function aTtrInsert()
-    {
-
-        $name = $_POST["name"];
-        $text = $_POST["text"];
-
-        $parameters = [];
-
-        array_push($parameters, $name, $text);
-
-        $this->b->insertAt($parameters);
-
-    }
-
-    public function openlist()
-    {
-
-        $data = $this->b->select();
-
-        $result = json_encode($data);
-
-        echo $result;
+        $this->b->insert($parameters);
 
     }
 
     public function assumption()
     {
 
-        $parameters = $_POST["searchstring"];
-        $data       = $this->b->assumptionEn($parameters);
-        $result     = json_encode($data);
+        $parameters = $_POST;
+        $this->tableByType($parameters);
+        $data                    = $this->b->assumption($parameters);
+        $parameters["__data"]    = $data;
+        $parameters["__varname"] = "data";
+        $this->t->assign($parameters);
+        
+        $result = $this->t->drawparseform($parameters);
+
         echo $result;
 
     }
 
-    public function deletefrom()
+    public function delete()
     {
 
-        $parameters = $_POST["deleteids"];
+        $parameters = $_POST;
+        $this->tableByType($parameters);
 
-        $this->b->deleteEn($parameters);
+        var_dump($parameters);
+        $this->b->delete($parameters);
 
     }
 
@@ -110,17 +78,17 @@ class Controller
 
     }
 
-    public function generateeditlistAt()
+    public function listEdById()
     {
 
-        $ids        = $_POST["ids"];
-        $parameters = [];
+        $parameters = $_POST;
 
-        array_push($parameters, $ids);
+        $this->tableByType($parameters);
+        $parameters["__data"]    = $this->b->selectById($parameters);
+        $parameters["__varname"] = "data";
+        $this->t->assign($parameters);
 
-        $data = $this->b->selectByIdAt($parameters);
-
-        $result = json_encode($data);
+        $result = $this->t->drawparseform($parameters);
         echo $result;
 
     }
@@ -135,22 +103,44 @@ class Controller
 
     }
 
-    public function drawparseform()
+    public function drawparseform($inparameters)
     {
 
+        if ($inparameters === null) {
+            $parameters = $_POST;
 
-        $parameters = $_POST;
+            $this->tableByType($parameters);
+            $parameters["__data"] = $this->b->select($parameters);
 
-        $data = $this->b->select();
-        $result = $this->t->drawparseform($parameters);
+        } else {
+            $parameters = $inparameters;
+        }
 
         $parameters["__varname"] = "data";
-
         $this->t->assign($parameters);
-
-        //echo $this->t->parameters["data"]["formname"];
+        $result = $this->t->drawparseform($parameters);
 
         echo $result;
+
+    }
+
+    public function tableByType(&$parameters)
+    {
+
+        $type = $parameters["type"];
+        $tablename;
+        if ($type === "undefined") {
+            $tablename = "Entity";
+            echo "no type recieved";
+
+        } elseif ($type === "en") {
+            $tablename = "Entity";
+
+        } elseif ($type === "at") {
+            $tablename = "Attribute";
+        }
+
+        $parameters["tablename"] = $tablename;
 
     }
 

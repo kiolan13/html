@@ -133,9 +133,13 @@ class Model
     {
 
         $connection = $this->connection;
+        $tablename = $parameters["tablename"];
+        $name = $parameters["name"];
+        $text = $parameters["text"];
+   
 
-        $q     = "INSERT INTO Attribute (name, text) VALUES ('%s', '%s')";
-        $query = vsprintf($q, $parameters);
+        $q     = "INSERT INTO %s (name, text) VALUES ('%s', '%s')";
+        $query = vsprintf($q, array($tablename, $name, $text));
 
         if ($connection->query($query) === true) {
             echo "Data inserted successfully";
@@ -144,13 +148,12 @@ class Model
         }
     }
 
-
-
-    public function select()
+    public function select($parameters)
     {
 
         $connection = $this->connection;
-        $query      = "SELECT * FROM Entity";
+        $tablename  = $parameters["tablename"];
+        $query      = "SELECT * FROM " . $tablename;
         $result     = $connection->query($query);
         $data       = [];
 
@@ -162,20 +165,21 @@ class Model
 
     }
 
-
     public function assumption($parameters)
     {
 
-        $connection = $this->connection;
-        $parameters = "%" . $parameters . "%";
+        $connection   = $this->connection;
+        $tablename    = $parameters["tablename"];
+        $searchstring = $parameters["searchstring"];
+        $searchstring = "%" . $searchstring . "%";
 
         //$stmt = $connection->prepare("SELECT * FROM Attribute WHERE name LIKE ?");
         //$stmt->bind_param("s", $parameters);
         //$stmt->execute();
         //$result = $stmt->get_result();
 
-        $q      = "SELECT * FROM Entity WHERE name LIKE '%s'";
-        $query  = vsprintf($q, $parameters);
+        $q      = "SELECT * FROM %s WHERE name LIKE '%s'";
+        $query  = vsprintf($q, array($tablename, $searchstring));
         $result = $connection->query($query);
 
         $data = [];
@@ -185,17 +189,18 @@ class Model
         }
 
         return $data;
+
     }
-
-
 
     public function delete($parameters)
     {
 
         $connection = $this->connection;
+        $tablename  = $parameters["tablename"];
+        $deleteid   = $parameters["deleteids"];
 
-        $q     = "DELETE FROM Entity WHERE id in (%s)";
-        $query = vsprintf($q, $parameters);
+        $q     = "DELETE FROM %s WHERE id in (%s)";
+        $query = vsprintf($q, array($tablename, $deleteid));
 
         if ($connection->query($query) === true) {
             echo "Data deleted successfully";
@@ -205,16 +210,15 @@ class Model
 
     }
 
-   
-
     public function selectById($parameters)
     {
 
         $connection = $this->connection;
+        $tablename  = $parameters["tablename"];
+        $ids        = $parameters["ids"];
 
-        $q     = "SELECT * FROM Entity WHERE id in (%s)";
-        $query = vsprintf($q, $parameters);
-
+        $q      = "SELECT * FROM %s WHERE id in (%s)";
+        $query  = vsprintf($q, array($tablename, $ids));
         $result = $connection->query($query);
 
         $data = [];
@@ -226,6 +230,5 @@ class Model
         return $data;
 
     }
-
 
 }

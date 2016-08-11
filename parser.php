@@ -37,7 +37,7 @@ class Parser extends Base
 
                     $actionname = $parsearray[2];
 
-                    $controller->$actionname();
+                    $controller->$actionname(null);
 
                 }
 
