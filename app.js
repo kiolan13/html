@@ -1,14 +1,18 @@
 "use strict";
 var App = function() {
-    var that = this,
-        parameters = [];
+
+    var that = this;
+
     this.xmlhttp = null;
     this.type = "";
-    parameters["that"] = that;
-    that.init(parameters);
+
 }
-App.prototype.init = function(parameters) {
-    var that = parameters["that"];
+App.prototype.init = function() {
+    var that = this,
+        parameters = [];
+
+    parameters["that"] = that;
+
     if (window.XMLHttpRequest) {
         that.xmlhttp = new XMLHttpRequest();
     } else {
@@ -60,18 +64,19 @@ App.prototype.open = function(inparameters) {
     xmlhttp.send(data);
 }
 App.prototype.xht = function(parameters) {
-        var that = parameters["that"],
-            xmlhttp = that.xmlhttp,
-            response = parameters["response"];
-        if (parameters["response"] !== null) {
-            xmlhttp.onreadystatechange = function(e) {
-                response(parameters);
-            }
+    var that = parameters["that"],
+        xmlhttp = that.xmlhttp,
+        response = parameters["response"];
+    if (parameters["response"] !== null) {
+        xmlhttp.onreadystatechange = function(e) {
+            response(parameters);
         }
-        this.open(parameters);
     }
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    this.open(parameters);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 App.prototype.innewbutton = function(inparameters) {
     var parameters = [],
         that = inparameters["that"],
@@ -170,8 +175,11 @@ App.prototype.inBox = function(inparameters) {
     document.getElementById("_in").innerHTML = "";
 }
 App.prototype.inlistEd = function(inparameters) {
-    var parameters = [],
-        that = inparameters["that"];
+    var parameters,
+        that;
+
+    parameters = [];
+    that = inparameters["that"];
     parameters["that"] = that;
     parameters["type"] = inparameters["type"];
     parameters["url"] = "index/drawform";
@@ -182,24 +190,25 @@ App.prototype.inlistEd = function(inparameters) {
     that.xht(parameters);
 }
 App.prototype.insSev = function(inparameters) {
-        var that = inparameters["that"],
-            parameters = [],
-            e = inparameters["e"],
-            parent = e.target.parentNode,
-            searchfield = that.getchildById(parent.id, "listEdsearchfield"),
-            searchstring = "",
-            v = "";
-        searchstring = searchfield.value;
-        parameters["that"] = that;
-        parameters["type"] = inparameters["type"];
-        parameters["url"] = "index/assumption";
-        parameters["data"] = "searchstring=" + searchstring + "&type=" + parameters["type"] + "&formname=loop";
-        parameters["response"] = that.response;
-        parameters["inEl"] = that.getchildById(parent.id, "_in_sT");
-        //parameters["outfunc"] = null;
-        that.xht(parameters);
-    }
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    var that = inparameters["that"],
+        parameters = [],
+        e = inparameters["e"],
+        parent = e.target.parentNode,
+        searchfield = that.getchildById(parent.id, "listEdsearchfield"),
+        searchstring = "",
+        v = "";
+    searchstring = searchfield.value;
+    parameters["that"] = that;
+    parameters["type"] = inparameters["type"];
+    parameters["url"] = "index/assumption";
+    parameters["data"] = "searchstring=" + searchstring + "&type=" + parameters["type"] + "&formname=loop";
+    parameters["response"] = that.response;
+    parameters["inEl"] = that.getchildById(parent.id, "_in_sT");
+    //parameters["outfunc"] = null;
+    that.xht(parameters);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 App.prototype.outindexform = function(inparameters) {
     var parameters = [],
         that = inparameters["that"];
@@ -390,4 +399,10 @@ App.prototype.checkboxgetAll = function(chboxes) {
     }
     return result;
 }
-var b = new App();
+
+
+
+var Tree = function () {
+
+    
+}
