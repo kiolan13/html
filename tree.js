@@ -32,7 +32,7 @@ Tree.prototype.init = function(parameters) {
 
 Tree.prototype.xhr = function(parameters) {
     var xmlhttp = this.xmlhttp,
-        response = parameters["infunc"];
+        response = parameters["response"];
     if (response !== null) {
         xmlhttp.onreadystatechange = function(e) {
             response(parameters);
@@ -77,10 +77,10 @@ Tree.prototype.stateIsOk = function(xmlhttp) {
 
 Tree.prototype.bind = function(parameters) {
     var element = parameters["element"],
-        response = parameters["infunc"];
+        infunc = parameters["infunc"];
     element.addEventListener(parameters["event"], function(e) {
         parameters["e"] = e;
-        response(parameters);
+        infunc(parameters);
     });
 }
 
@@ -115,7 +115,7 @@ Tree.prototype.innewbutton = function(inparameters) {
         formname = "attribute";
         outfunc = that.outaTtr;
     }
-    parameters["infunc"] = that.response;
+
     parameters["outfunc"] = outfunc;
     parameters["data"] = "formname=" + formname;
 
@@ -134,7 +134,7 @@ Tree.prototype.inopb = function(inparameters) {
     parameters["that"] = that;
     parameters["url"] = "index/drawform";
     parameters["id"] = "_in";
-    parameters["infunc"] = that.response;
+    parameters["response"] = that.response;
     parameters["outfunc"] = that.outlistEd;
     parameters["type"] = that.type;
     parameters["data"] = "formname=listEd";
@@ -170,7 +170,7 @@ Tree.prototype.insSev = function(inparameters) {
     parameters["type"] = inparameters["type"];
     parameters["url"] = "index/assumption";
     parameters["data"] = "searchstring=" + searchstring + "&type=" + parameters["type"] + "&formname=loop";
-    parameters["infunc"] = that.response;
+    parameters["response"] = that.response;
     parameters["id"] = "_in_sT";
     //parameters["outfunc"] = null;
     that.xhr(parameters);
@@ -256,7 +256,7 @@ Tree.prototype.outlistEd = function(inparameters) {
     parameters["url"] = "index/drawparseform";
     parameters["id"] = "_in_sT";
     parameters["data"] = "formname=loop&type=" + parameters["type"];
-    parameters["infunc"] = that.response;
+    parameters["response"] = that.response;
     parameters["outfunc"] = null;
     
 
@@ -264,7 +264,7 @@ Tree.prototype.outlistEd = function(inparameters) {
     that.nodes[0] = new Tree(parameters);
     that.nodes[0].load();
     that.nodes[0].parent = that;
-    
+
 }
 
 
@@ -339,6 +339,6 @@ parameters["outfunc"] = null;
 parameters["data"] = "formname=start";
 parameters["type"] = "en";
 var t = new Tree(parameters);
-t.parameters["infunc"] = t.response;
+t.parameters["response"] = t.response;
 t.parameters["outfunc"] = t.outindexform;
 t.load();
