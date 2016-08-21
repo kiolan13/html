@@ -47,6 +47,7 @@ class Controller
         $parameters = $_POST;
         $this->tableByType($parameters);
         $data                    = $this->b->assumption($parameters);
+
         $parameters["__data"]    = $data;
         $parameters["__varname"] = "data";
         $this->t->assign($parameters);

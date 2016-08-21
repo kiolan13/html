@@ -22,6 +22,7 @@ App.prototype.init = function() {
     that.outindexform(parameters);
 };
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 App.prototype.bind = function(parameters) {
     var element = parameters["element"],
         response = parameters["response"];
@@ -30,6 +31,7 @@ App.prototype.bind = function(parameters) {
         response(parameters);
     });
 }
+
 App.prototype.stateIsOk = function(xmlhttp) {
     if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
         return true;
@@ -77,6 +79,7 @@ App.prototype.xht = function(parameters) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 App.prototype.innewbutton = function(inparameters) {
     var parameters = [],
         that = inparameters["that"],
@@ -344,7 +347,9 @@ App.prototype.getchildById = function(parentid, childrenid) {
     return null;
 }
 App.prototype.remove = function() {}
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 App.prototype.checkboxevents = function(inparameters) {
     var i = 0,
         that = inparameters["that"],
@@ -386,6 +391,7 @@ App.prototype.checkboxget = function() {
     }
     return -1;
 }
+
 App.prototype.checkboxgetAll = function(chboxes) {
     var i = 0,
         l = chboxes.length,
@@ -402,7 +408,3 @@ App.prototype.checkboxgetAll = function(chboxes) {
 
 
 
-var Tree = function () {
-
-    
-}
