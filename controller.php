@@ -104,6 +104,14 @@ class Controller
 
     }
 
+    public function drawformwithsettings() 
+    {
+         $parameters = $_POST;
+         $data = $this->t->drawformwithsettings($parameters);
+         $result = json_encode($data);
+         echo $result;
+    }
+
     public function drawparseform($inparameters)
     {
 

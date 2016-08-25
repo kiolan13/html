@@ -35,15 +35,6 @@ class Template
 
     }
 
-    public function getfiledate($filename)
-    {
-
-        $myfile  = fopen($filename, "r");
-        $content = fread($myfile, filesize($filename));
-        return $content;
-
-    }
-
     public function parse($content)
     {
 
@@ -96,7 +87,7 @@ class Template
 
                 $varname    = $matches[1];
                 $subvarname = $matches[2];
-                $i = $this->i;
+                $i          = $this->i;
 
                 return $this->parameters[$varname][$i][$subvarname];
 
@@ -112,23 +103,29 @@ class Template
 
         $formname = $parameters["formname"];
         $filename = $this->forms[$formname]["filename"];
-        $html     = $this->draw($filename, false);
+        $html     = $this->draw($filename);
+
+        //$html     = $this->draw($filename, false);
 
         echo $html;
 
     }
 
-    public function drawparseform($parameters)
+    public function drawformwithsettings($parameters)
     {
 
+        $result = $this->prepare($parameters);
+        return $result;
+    }
+
+    public function drawparseform($parameters)
+    {
 
         $formname = $parameters["formname"];
         $filename = $this->forms[$formname]["filename"];
         $content  = $this->draw($filename);
 
         $result = $this->parse($content);
-
-       
 
         return $result;
 
@@ -138,16 +135,76 @@ class Template
     {
 
         $varname = $parameters["__varname"];
-       
-    
 
         if (!isset($this->parameters[$varname])) {
             $this->parameters[$varname] = [];
         }
 
         $this->parameters[$varname] = array_merge($this->parameters[$varname], $parameters["__data"]);
-        
 
+    }
+    public function prepare($parameters)
+    {
+        $formname                     = $parameters["formname"];
+        $filename                     = $this->forms[$formname]["filename"];
+        $html                         = $this->draw($filename);
+        $form                         = $this->forms[$formname];
+        $result                       = [];
+        $parameters["html"]           = $html;
+        $parameters["form"]           = $form;
+        $parameters["activeelements"] = [];
+        $parameters["inids"]          = [];
+        if (isset($form["activeelements"])) {
+            $parameters["targetarray"] = $form["activeelements"];
+            $parameters["selector"]    = "id";
+            $parameters["resultname"]  = "activeelements";
+
+            $parameters = $this->findandreplaceall($parameters);
+        }
+        if (isset($form["inids"])) {
+            $parameters["targetarray"]      = $form["inids"];
+            $parameters["selector"]   = "id";
+            $parameters["resultname"] = "inids";
+
+            $parameters = $this->findandreplaceall($parameters);
+        }
+
+        $result["html"]           = $parameters["html"];
+        $result["activeelements"] = $parameters["activeelements"];
+        $result["inids"]          = $parameters["inids"];
+
+        return $result;
+
+    }
+    public function findandreplaceall($parameters)
+    {
+        $html        = $parameters["html"];
+        $targetarray = $parameters["targetarray"];
+        $selector    = $parameters["selector"];
+        $resultname  = $parameters["resultname"];
+        $l           = count($targetarray);
+        for ($i = 0; $i < $l; $i++) {
+            $id                         = $targetarray[$i][$selector];
+            $newid                      = $this->generateid();
+            $targetarray[$i][$selector] = $newid;
+            $html                       = $this->replace($id, $newid, $html);
+        }
+
+        $parameters["html"]       = $html;
+        $parameters[$resultname] = $targetarray;
+
+        return $parameters;
+
+    }
+    public function generateid()
+    {
+        $result = "id" . rand(10000, 90000) . rand(1000, 9000);
+        return $result;
+    }
+    public function replace($target, $replacment, $data)
+    {
+        $data = preg_replace("/" . $target . "/", $replacment, $data);
+        return $data;
     }
 
 }

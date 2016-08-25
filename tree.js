@@ -8,9 +8,12 @@ var Tree = function(parameters) {
     this.outfunc = parameters["outfunc"];
     this.data = parameters["data"];
     this.type = parameters["type"];
-    this.inId = null;
+    this.inids = [];
+    this.html = null;
+    this.contenthtml = null;
 
     this.nodes = [];
+    this.activeelements = [];
     this.xmlhttp = null;
 
 
@@ -20,13 +23,19 @@ var Tree = function(parameters) {
 
 Tree.prototype.init = function(parameters) {
 
-    if (window.XMLHttpRequest) {
-        this.xmlhttp = new XMLHttpRequest();
+    if (parameters["xmlhttp"] == "undefined" || parameters["xmlhttp"] == null) {
+        if (window.XMLHttpRequest) {
+            this.xmlhttp = new XMLHttpRequest();
+        } else {
+            this.xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+        }
     } else {
-        this.xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+        this.xmlhttp = parameters["xmlhttp"];
     }
 
     parameters["that"] = this;
+    parameters["response"] = this.response;
+    parameters["replace"] = true;
     this.parameters = parameters;
 }
 
@@ -56,11 +65,13 @@ Tree.prototype.response = function(parameters) {
         xmlhttp = that.xmlhttp,
         outfunc = parameters["outfunc"],
         result = "";
+
     if (!that.stateIsOk(xmlhttp)) {
         return;
     }
+
     result = xmlhttp.responseText;
-    document.getElementById(that.id).innerHTML = result;
+    parameters["result"] = result;
 
     if (outfunc != null && outfunc != "undefined") {
         outfunc(parameters);
@@ -76,17 +87,26 @@ Tree.prototype.stateIsOk = function(xmlhttp) {
 }
 
 Tree.prototype.bind = function(parameters) {
-    var element = parameters["element"],
-        infunc = parameters["infunc"];
-    element.addEventListener(parameters["event"], function(e) {
+    var that = parameters["that"],
+        id = parameters["id"],
+        infunc = parameters["infunc"],
+        el = document.getElementById(id);
+    that.activeelements.push(el);
+    el.addEventListener(parameters["event"], function(e) {
         parameters["e"] = e;
         infunc(parameters);
     });
 }
 
-Tree.prototype.load = function() {
 
-    this.xhr(this.parameters);
+
+Tree.prototype.load = function(parameters) {
+    if (parameters == null) {
+        this.xhr(this.parameters);
+    } else {
+        this.xhr(parameters);
+    }
+
 }
 
 Tree.prototype.split = function(parameters) {
@@ -95,14 +115,13 @@ Tree.prototype.split = function(parameters) {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Tree.prototype.innewbutton = function(inparameters) {
-    var parameters = [],
-        that = inparameters["that"],
+Tree.prototype.innewbutton = function(parameters) {
+    var that = parameters["that"],
         chd = document.getElementById("inchbox"),
         formname = null,
         outfunc = null,
         v = "";
-    parameters["that"] = that;
+
     parameters["url"] = "index/drawform";
     parameters["id"] = "_in";
     parameters["response"] = that.response;
@@ -121,18 +140,16 @@ Tree.prototype.innewbutton = function(inparameters) {
 
     that.nodes[0] = new Tree(parameters);
     that.nodes[0].load();
-    //that.nodes[0].parent = that;
+    that.nodes[0].parent = that;
 
 }
 
-Tree.prototype.inopb = function(inparameters) {
-    var parameters = [],
-        that = inparameters["that"],
+Tree.prototype.inopb = function(parameters) {
+    var that = parameters["that"],
         cb = 0,
         v = "";
 
-    parameters["that"] = that;
-    parameters["url"] = "index/drawform";
+    parameters["url"] = "index/drawformwithsettings";
     parameters["id"] = "_in";
     parameters["response"] = that.response;
     parameters["outfunc"] = that.outlistEd;
@@ -145,10 +162,10 @@ Tree.prototype.inopb = function(inparameters) {
 
 }
 
-Tree.prototype.inBox = function(inparameters) {
-    var that = inparameters["that"],
-        e = inparameters["e"],
-        id = inparameters["id"],
+Tree.prototype.inBox = function(parameters) {
+    var that = parameters["that"],
+        e = parameters["e"],
+        id = e.target.parentNode.id,
         v = "";
     that.checkboxclear(id);
     e.target.checked = true;
@@ -157,23 +174,20 @@ Tree.prototype.inBox = function(inparameters) {
     document.getElementById("_in").innerHTML = "";
 }
 
-Tree.prototype.insSev = function(inparameters) {
-    var that = inparameters["that"],
-        parameters = [],
-        e = inparameters["e"],
+Tree.prototype.insSev = function(parameters) {
+    var that = parameters["that"],
+        e = parameters["e"],
         parent = e.target.parentNode,
-        searchfield = document.getElementById("listEdsearchfield"),
+        searchfield = that.activeelements[0],
         searchstring = "";
-    
+
     searchstring = searchfield.value;
-    parameters["that"] = that;
-    parameters["type"] = inparameters["type"];
     parameters["url"] = "index/assumption";
     parameters["data"] = "searchstring=" + searchstring + "&type=" + parameters["type"] + "&formname=loop";
     parameters["response"] = that.response;
-    parameters["id"] = "_in_sT";
-    //parameters["outfunc"] = null;
-    that.xhr(parameters);
+    parameters["id"] = that.inids[0]["id"];
+
+    that.load(parameters);
 }
 
 
@@ -181,106 +195,114 @@ Tree.prototype.insSev = function(inparameters) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Tree.prototype.outindexform = function(inparameters) {
-    var parameters = [],
-        that = inparameters["that"];
-    parameters["that"] = that;
+Tree.prototype.out = function(parameters) {
+    var that = parameters["that"],
+        result = parameters["result"],
+        id = parameters["id"];
+    document.getElementById(id).innerHTML = result;
+
+}
+
+
+
+Tree.prototype.outindexform = function(parameters) {
+    var that = parameters["that"],
+        result = parameters["result"],
+        id = parameters["id"];
+
+
+    document.getElementById(id).innerHTML = result;
+
     parameters["id"] = "inchbox";
     that.checkboxevents(parameters);
     parameters["type"] = "en";
-    parameters["inEl"] = document.getElementById("_in");
     parameters["event"] = "click";
     parameters["infunc"] = that.innewbutton;
-    parameters["element"] = document.getElementById("innewb");
+    parameters["id"] = "innewb";
     that.bind(parameters);
     parameters["infunc"] = that.inopb;
-    parameters["element"] = document.getElementById("inopb");
+    parameters["id"] = "inopb";
     that.bind(parameters);
 
 }
-Tree.prototype.outeNtt = function(inparameters) {
-    var parameters = [],
-        that = inparameters["that"],
-        xmlhttp = that.xmlhttp,
-        id = inparameters["id"];
-    if (!that.stateIsOk(xmlhttp)) {
-        return;
-    }
-    document.getElementById(id).innerHTML = xmlhttp.responseText;
-    parameters["that"] = that;
-    parameters["type"] = inparameters["type"];
+Tree.prototype.outeNtt = function(parameters) {
+    var that = parameters["that"],
+        result = parameters["result"],
+        id = parameters["id"];
+
+    document.getElementById(id).innerHTML = result;
+
     parameters["event"] = "click";
-    parameters["element"] = document.getElementById("eNlistaTed");
+    parameters["id"] = "eNlistaTed";
     parameters["infunc"] = null;
     that.bind(parameters);
-    parameters["element"] = document.getElementById("eNsave");
+    parameters["id"] = "eNsave";
     parameters["infunc"] = that.inSave;
     that.bind(parameters);
 }
-Tree.prototype.outaTtr = function(inparameters) {
-    var parameters = [],
-        that = inparameters["that"],
-        xmlhttp = that.xmlhttp,
-        id = inparameters["id"];
-    if (!that.stateIsOk(xmlhttp)) {
-        return;
+
+Tree.prototype.outaTtr = function(parameters) {
+    var that = parameters["that"],
+        result = parameters["result"],
+        id = parameters["id"];
+
+    document.getElementById(id).innerHTML = result;
+    parameters["id"] = "aTsave";
+    parameters["event"] = "click";
+    parameters["infunc"] = that.inSave;
+    that.bind(parameters);
+}
+
+Tree.prototype.outlistEd = function(parameters) {
+    var that = parameters["that"],
+        data = parameters["result"],
+        id = that.id,
+        i = 0,
+        l = 0,
+        v = null;
+
+    result = JSON.parse(data);
+    that.html = result["html"];
+
+
+    document.getElementById(id).innerHTML = that.html;
+
+
+    that.inids = result["inids"];
+    l = result["activeelements"].length;
+    for (i = 0; i < l; i++) {
+        v = result["activeelements"][i];
+        parameters["event"] = v["event"];
+        parameters["id"] = v["id"];
+        parameters["infunc"] = that[v["infunc"]];
+        that.bind(parameters);
     }
-    document.getElementById(id).innerHTML = xmlhttp.responseText;
-    parameters["that"] = that;
-    parameters["type"] = inparameters["type"];
-    parameters["element"] = document.getElementById("aTsave");
-    parameters["event"] = "click";
-    parameters["infunc"] = that.inSave;
-    that.bind(parameters);
-}
-Tree.prototype.outlistEd = function(inparameters) {
-    var parameters = [],
-        that = inparameters["that"],
-        xmlhttp = that.xmlhttp,
-        result = "";
-    parameters["that"] = that;
-    parameters["type"] = inparameters["type"];
-    parameters["element"] = document.getElementById("listEdsearchfield");
-    parameters["event"] = "keyup";
-    parameters["infunc"] = that.insSev;
-    that.bind(parameters);
-    document.getElementById("listEdattraddbutton").style.display = "none";
-    parameters["element"] = document.getElementById("listEdeditbutton");
-    parameters["event"] = "click";
-    parameters["infunc"] = that.inEdit;
-    that.bind(parameters);
-    parameters["element"] = document.getElementById("listEdattrdeletebutton");
-    parameters["infunc"] = that.inDelete;
-    that.bind(parameters);
+
 
     parameters["url"] = "index/drawparseform";
-    parameters["id"] = "_in_sT";
+    parameters["id"] = that.inids[0]["id"];
     parameters["data"] = "formname=loop&type=" + parameters["type"];
-    parameters["response"] = that.response;
-    parameters["outfunc"] = null;
-    
+    parameters["outfunc"] = that.out;
 
 
-    that.nodes[0] = new Tree(parameters);
-    that.nodes[0].load();
-    that.nodes[0].parent = that;
+
+    that.load(parameters);
 
 }
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Tree.prototype.checkboxevents = function(inparameters) {
+Tree.prototype.checkboxevents = function(parameters) {
     var i = 0,
-        that = inparameters["that"],
-        id = inparameters["id"],
+        that = parameters["that"],
+        id = parameters["id"],
         chboxes = document.getElementById(id).children,
-        l = chboxes.length,
-        parameters = [];
+        l = chboxes.length;
+
     parameters["that"] = that;
     parameters["event"] = "click";
     parameters["infunc"] = that.inBox;
-    parameters["id"] = inparameters["id"];
     for (i = 0; i < l; i++) {
         if (chboxes[i].type === "checkbox") {
             parameters["element"] = chboxes[i];
@@ -291,7 +313,7 @@ Tree.prototype.checkboxevents = function(inparameters) {
 
 Tree.prototype.checkboxclear = function(id) {
     var i = 0,
-        chboxes = document.getElementById(id).children,
+        chboxes = document.getElementById("inchbox").children,
         l = chboxes.length;
     for (i = 0; i < l; i++) {
         if (chboxes[i].type === "checkbox") {
@@ -339,6 +361,5 @@ parameters["outfunc"] = null;
 parameters["data"] = "formname=start";
 parameters["type"] = "en";
 var t = new Tree(parameters);
-t.parameters["response"] = t.response;
 t.parameters["outfunc"] = t.outindexform;
-t.load();
+t.load(parameters);
