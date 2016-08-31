@@ -125,7 +125,9 @@ class Template
         $filename = $this->forms[$formname]["filename"];
         $content  = $this->draw($filename);
 
-        $result = $this->parse($content);
+        $html = $this->parse($content);
+
+        $result["html"] = $html;
 
         return $result;
 
@@ -153,7 +155,7 @@ class Template
         $parameters["html"]           = $html;
         $parameters["form"]           = $form;
         $parameters["activeelements"] = [];
-        $parameters["inids"]          = [];
+        $parameters["ids"]          = [];
         if (isset($form["activeelements"])) {
             $parameters["targetarray"] = $form["activeelements"];
             $parameters["selector"]    = "id";
@@ -161,17 +163,17 @@ class Template
 
             $parameters = $this->findandreplaceall($parameters);
         }
-        if (isset($form["inids"])) {
-            $parameters["targetarray"]      = $form["inids"];
+        if (isset($form["ids"])) {
+            $parameters["targetarray"]      = $form["ids"];
             $parameters["selector"]   = "id";
-            $parameters["resultname"] = "inids";
+            $parameters["resultname"] = "ids";
 
             $parameters = $this->findandreplaceall($parameters);
         }
 
         $result["html"]           = $parameters["html"];
         $result["activeelements"] = $parameters["activeelements"];
-        $result["inids"]          = $parameters["inids"];
+        $result["ids"]          = $parameters["ids"];
 
         return $result;
 

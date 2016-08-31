@@ -7,20 +7,6 @@
     width: 150px;
 }
 
-#_in input {
-    width: 150px;
-}
-
-#_in {
-    display: block;
-}
-
-#_in textarea {
-    resize: none;
-    height: 100px;
-}
-
-
 
 #listEd {
     display: block;

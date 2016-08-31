@@ -127,7 +127,8 @@ class Controller
 
         $parameters["__varname"] = "data";
         $this->t->assign($parameters);
-        $result = $this->t->drawparseform($parameters);
+        $data = $this->t->drawparseform($parameters);
+        $result = json_encode($data);
 
         echo $result;
 

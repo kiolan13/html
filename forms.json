@@ -1,9 +1,14 @@
 {
-  "attribute": {
-    "filename": "attribute.html"
+  "at": {
+    "filename": "at.html",
+    "activeelements": [
+      {
+        
+      }
+    ]
   },
-  "entity": {
-    "filename": "entity.html"
+  "en": {
+    "filename": "en.html"
   },
   "index": {
     "filename": "index.html"
@@ -13,26 +18,30 @@
       {
         "event": "keyup",
         "id": "listEdsearchfield",
-        "infunc": "insSev"
+        "infunc": "insSev",
+        "name": "searchfield"
       },
       {
         "event": "click",
         "id": "listEdattraddbutton",
-        "infunc": "inAdd"
+        "infunc": "inAdd",
+        "name": "button1"
       },
       {
         "event": "click",
         "id": "listEdeditbutton",
-        "infunc": "inEdit"
+        "infunc": "inEdit",
+        "name": "button2"
       },
       {
         "event": "click",
         "id": "listEdattrdeletebutton",
-        "infunc": "inDelete"
+        "infunc": "inDelete",
+        "name": "button3"
       }
     ],
     "filename": "listEd.html",
-    "inids": [
+    "ids": [
       {
         "id": "_in_sT"
       }
@@ -41,7 +50,38 @@
   "loop": {
     "filename": "loop.html"
   },
-  "start": {
-    "filename": "start.html"
+  "menu": {
+    "activeelements": [
+      {
+        "event": "click",
+        "id": "innewb",
+        "infunc": "innewbutton",
+        "name": "button1"
+      },
+      {
+        "event": "click",
+        "id": "inopb",
+        "infunc": "inopb",
+        "name": "button2"
+      },
+      {
+        "event": "click",
+        "id": "enc",
+        "infunc": "inBox",
+        "name": "cb1"
+      },
+      {
+        "event": "click",
+        "id": "atc",
+        "infunc": "inBox",
+        "name": "cb2"
+      }
+    ],
+    "filename": "menu.html",
+    "ids": [
+      {
+        "id": "_in"
+      }
+    ]
   }
 }
